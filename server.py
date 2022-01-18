@@ -23,8 +23,8 @@ class ChatServer:
         msg = sock.recv(1024)
         print(msg.decode("utf8"))
         for key, _ in self._write_selector.select(0):
-            sock = key.fileobj
-            sock.send(msg)
+            if key.fileobj is not sock:
+                key.fileobj.send(msg)
 
     def _init_server(self):
         """Initialises the server socket."""
