@@ -9,17 +9,22 @@ class ChatServer:
         self._port = port
         self._socket = None
         self._read_selector = selectors.DefaultSelector()
+        self._write_selector = selectors.DefaultSelector()
 
     def _accept_connection(self, sock):
         """Callback function for when the server is ready to accept a connection."""
         client, _ = sock.accept()
         print("Registering client...")
         self._read_selector.register(client, selectors.EVENT_READ, self._receive_message)
+        self._write_selector.register(client, selectors.EVENT_WRITE)
 
     def _receive_message(self, sock):
         """Callback function for when a client socket is ready to receive."""
         msg = sock.recv(1024)
         print(msg.decode("utf8"))
+        for key, _ in self._write_selector.select(0):
+            sock = key.fileobj
+            sock.send(msg)
 
     def _init_server(self):
         """Initialises the server socket."""
