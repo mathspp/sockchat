@@ -13,7 +13,7 @@ class ChatClient:
 
     def _input_and_send_loop(self):
         while True:
-            msg = input(">>> ")
+            msg = input()
             self._socket.send(msg.encode("utf8"))
 
     def connect(self):
@@ -21,7 +21,7 @@ class ChatClient:
         threading.Thread(target=self._input_and_send_loop).start()
         while True:
             msg = self._socket.recv(1024).decode("utf8")
-            print(msg)
+            print(" < " + msg)
 
 
 if __name__ == "__main__":
